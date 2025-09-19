@@ -19,7 +19,7 @@ ENV TSC_COMPILE_ON_ERROR=true
 ENV ESLINT_NO_DEV_ERRORS=true
 ENV GENERATE_SOURCEMAP=false
 
-# Build the application with type checking disabled
+# Build the application
 RUN npm run build
 
 # Production stage
@@ -44,6 +44,9 @@ USER nodejs
 
 # Expose port 5001
 EXPOSE 5001
+
+# Set environment variable to run on port 5001
+ENV PORT=5001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \

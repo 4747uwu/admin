@@ -7,10 +7,11 @@ services:
       dockerfile: Dockerfile
     container_name: figgy-admin
     ports:
-      - "5001:5001"
+      - "5001:3000"  # Map external 5001 to internal 3000
     environment:
       - NODE_ENV=production
-      - REACT_APP_API_URL=${BACKEND_API_URL:-http://localhost:5000}
+      - REACT_APP_API_URL=${BACKEND_API_URL:-http://164.92.87.147:5000}
+      - NEXT_PUBLIC_API_URL=${BACKEND_API_URL:-http://164.92.87.147:5000}
       - SKIP_PREFLIGHT_CHECK=true
       - TSC_COMPILE_ON_ERROR=true
       - ESLINT_NO_DEV_ERRORS=true
@@ -18,7 +19,7 @@ services:
     networks:
       - figgy-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5001/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/"]
       interval: 30s
       timeout: 10s
       retries: 3

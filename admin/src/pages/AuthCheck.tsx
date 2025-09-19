@@ -9,13 +9,17 @@ interface AuthCheckProps {
 
 const AuthCheck: React.FC<AuthCheckProps> = (props) => {
   const router = useRouter();
-  const isAuth = useAppSelector((state : RootStore) => state.admin.isAuth);
+  const isAuth = useAppSelector((state: RootStore) => state.admin.isAuth);
 
   useEffect(() => {
-    if (!isAuth) {
+    // Don't redirect if we're already on auth pages
+    const currentPath = router.pathname;
+    const authPages = ['/', '/Login', '/Registration'];
+    
+    if (!isAuth && !authPages.includes(currentPath)) {
       router.push("/");
     }
-  }, [ router]);
+  }, [isAuth, router]); // ✅ Added isAuth dependency
 
   return <>{props.children}</>;
 };

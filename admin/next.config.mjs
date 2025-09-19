@@ -16,8 +16,6 @@ const nextConfig = {
   },
   // Disable source maps in production for faster builds
   productionBrowserSourceMaps: false,
-  // Output standalone for Docker
-  output: 'standalone',
   images: {
     domains: ["192.168.1.27", "flagcdn.com", "164.92.87.147"], // Add your server IP
     remotePatterns: [

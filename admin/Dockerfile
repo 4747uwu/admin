@@ -28,11 +28,14 @@ FROM node:18-alpine AS production
 # Set working directory
 WORKDIR /app
 
-# Copy the entire .next folder and other necessary files
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Copy built application
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/next.config.mjs ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -45,12 +48,9 @@ USER nodejs
 # Expose port 5001
 EXPOSE 5001
 
-# Set environment variable to run on port 5001
-ENV PORT=5001
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:5001/ || exit 1
 
-# Start the application on port 5001
-CMD ["node", "server.js"]
+# Start Next.js with proper port
+CMD ["npm", "start", "--", "-p", "5001"]

@@ -52,5 +52,5 @@ EXPOSE 5001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:5001/ || exit 1
 
-# Start Next.js with proper port
-CMD ["npm", "start", "--", "-p", "5001"]
+# Start Next.js (package.json already has -p 5001)
+CMD ["npm", "start"]

@@ -33,6 +33,7 @@ interface ErrorState {
 const AdminProfile = () => {
   const dispatch = useAppDispatch();
   const roleSkeleton = useSelector(isSkeleton);
+  
   const [email, setEmail] = useState<string | undefined>();
   const [name, setName] = useState<string | undefined>();
   const [error, setError] = useState<ErrorState>({
@@ -57,19 +58,33 @@ const AdminProfile = () => {
   const [data, setData] = useState<any>();
 
   const { admin } = useSelector((state: RootStore) => state.admin);
- 
+  
+  // Add comprehensive console logs
+  console.log("🔍 [AdminProfile] Current admin state:", admin);
+  console.log("🔍 [AdminProfile] Admin name:", admin?.name);
+  console.log("🔍 [AdminProfile] Admin email:", admin?.email);
+  console.log("🔍 [AdminProfile] Admin image:", admin?.image);
+  // console.log("🔍 [AdminProfile] Updated image path:", updatedImagePath);
+  // console.log("🔍 [AdminProfile] Final image path:", baseURL + updatedImagePath);
 
   const updatedImagePath = admin?.image?.replace(/\\/g, "/");
 
   useEffect(() => {
+    console.log("🚀 [AdminProfile] Dispatching adminProfileGet...");
     dispatch(adminProfileGet());
   }, [dispatch]);
 
   useEffect(() => {
+    console.log("🔄 [AdminProfile] Admin state changed:", admin);
+    console.log("🔄 [AdminProfile] Setting local state...");
+    console.log("🔄 [AdminProfile] Setting name to:", admin?.name);
+    console.log("🔄 [AdminProfile] Setting email to:", admin?.email);
+    console.log("🔄 [AdminProfile] Setting imagePath to:", baseURL + updatedImagePath);
+    
     setName(admin?.name);
     setEmail(admin?.email);
     setImagePath(baseURL + updatedImagePath);
-  }, [admin]);
+  }, [admin, updatedImagePath]);
 
   const handleUploadImage = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -122,17 +137,26 @@ const AdminProfile = () => {
   };
 
   const handleEditName = async () => {
+    console.log("✏️ [handleEditName] Starting profile update...");
+    console.log("✏️ [handleEditName] Current values:", { name, email, imagePath });
+    
     if (!imagePath || !name || !email) {
       const error = {} as ErrorState;
       if (!email) error.email = "Email is required";
       if (!name) error.name = "Name is required";
       if (!image) error.image = "Image is required";
+      console.log("❌ [handleEditName] Validation errors:", error);
       setError(error);
     } else {
       const formData = new FormData();
       formData.append("image", image as File);
       formData.append("name", name);
       formData.append("email", email);
+
+      console.log("📤 [handleEditName] FormData contents:");
+      console.log("📤 [handleEditName] Name:", name);
+      console.log("📤 [handleEditName] Email:", email);
+      console.log("📤 [handleEditName] Image:", image);
 
       const user = auth?.currentUser;
 
@@ -145,11 +169,22 @@ const AdminProfile = () => {
       await reauthenticateWithCredential(user, credential);
 
       if (user.email !== email) {
+        console.log("📧 [handleEditName] Updating Firebase email...");
         await updateEmail(user, email);
       }
 
-
-      dispatch(adminProfileUpdate(formData));
+      // Dispatch the update and wait for it to complete
+      console.log("🚀 [handleEditName] Dispatching adminProfileUpdate...");
+      const result = await dispatch(adminProfileUpdate(formData));
+      console.log("📥 [handleEditName] Update result:", result);
+      
+      // After successful update, refresh the admin profile data
+      if (result.type === 'api/admin/admin/modifyAdminProfile/fulfilled') {
+        console.log("✅ [handleEditName] Update successful, refreshing profile...");
+        dispatch(adminProfileGet()); // Refresh the profile data
+      } else {
+        console.log("❌ [handleEditName] Update failed or pending...");
+      }
     }
   };
 

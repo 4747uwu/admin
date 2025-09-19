@@ -349,7 +349,7 @@ const Sidebar = () => {
                   style={{ color: "#FFF", fontSize: "40px" }}
                 // onClick={() => router("/admin/adminDashboard")}
                 >
-                  {projectName}
+                  figgy
                 </h3>
               </div>
               {/* <div className="smallLogo">

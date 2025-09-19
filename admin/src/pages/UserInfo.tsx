@@ -29,6 +29,10 @@ const UserInfo = () => {
   const loader = useSelector(isLoading);
   const { setting } = useSelector((state: RootStore) => state.setting);
   const dispatch = useAppDispatch();
+  console.log("userProfile", userProfile);
+  console.log("user", user);
+  console.log("userData", userData);
+  
 
   const router = useRouter();
   const id: any = router?.query?.id;

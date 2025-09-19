@@ -13,7 +13,7 @@ const AuthCheck: React.FC<AuthCheckProps> = (props) => {
 
   useEffect(() => {
     if (!isAuth) {
-      router.push("/Registration");
+      router.push("/");
     }
   }, [ router]);
 

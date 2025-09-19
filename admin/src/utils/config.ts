@@ -1,5 +1,5 @@
 
-export const baseURL: string = "http://figgy-backend:5000/"
+export const baseURL: string = "http://164.92.87.147:5000/"
 export const key: string = "secretKey"; // Admin access key for backend authentication
 export const projectName: string = "datingapp-146b1"; // Your Firebase project name
 export const apiKey: string = "AIzaSyCeAVElG9K95I3GZmB3rylpbcQ1diVRY5k";

@@ -20,26 +20,19 @@ ENV ESLINT_NO_DEV_ERRORS=true
 ENV GENERATE_SOURCEMAP=false
 
 # Build the application with type checking disabled
-RUN npm run build || (echo "Build failed, continuing anyway..." && mkdir -p build && echo "<html><body><h1>Admin Panel</h1></body></html>" > build/index.html)
+RUN npm run build
 
 # Production stage
 FROM node:18-alpine AS production
 
-# Install serve to run the built app
-RUN npm install -g serve
-
 # Set working directory
 WORKDIR /app
 
-# Copy built application from builder stage
-COPY --from=builder /app/build ./build
+# Copy the entire .next folder and other necessary files
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
-
-# Create a simple fallback if build directory is empty
-RUN if [ ! -f "./build/index.html" ]; then \
-        mkdir -p build && \
-        echo "<html><head><title>Figgy Admin</title></head><body><h1>Figgy Admin Panel</h1><p>Loading...</p></body></html>" > build/index.html; \
-    fi
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -57,4 +50,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:5001/ || exit 1
 
 # Start the application on port 5001
-CMD ["serve", "-s", "build", "-l", "5001"]
+CMD ["node", "server.js"]

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  figgy-admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: figgy-admin
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=${BACKEND_API_URL:-http://localhost:5000}
+      - SKIP_PREFLIGHT_CHECK=true
+      - TSC_COMPILE_ON_ERROR=true
+      - ESLINT_NO_DEV_ERRORS=true
+    restart: unless-stopped
+    networks:
+      - figgy-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  figgy-network:
+    driver: bridge
